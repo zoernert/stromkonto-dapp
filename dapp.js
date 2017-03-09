@@ -53,12 +53,29 @@ function renderUI() {
 	for(var i=0;i<web3.eth.accounts.length;i++) {
 		html+="<li><a href='?a="+web3.eth.accounts[i]+"'>"+web3.eth.accounts[i]+"</a></li>";
 	}
-	html+="<li><form class='form-control' id='frmAccount'><input type='text' id='txtAccount'></form></li>";
+	html+="<li><form class='form-control' id='frmAccount'><input type='text' id='txtAccount' name='a'><button type='submit' class='btn btn-xsl' id='btnAccount'>öffnen</button></form></li>";
 	$('#accountList').html(html);
-	$('#frmAccount').submit(function(event) {
-		location.replace="?a=".$('#txtAccount').val();
-		event.preventDefault();
+	$('#btnAccount').click(function() {
+		location.replace="?a="+$('#txtAccount').val();		
 	});
+	
+	var cs_sko =  web3.eth.contract([{"constant":false,"inputs":[{"name":"target","type":"address"},{"name":"_state","type":"uint8"}],"name":"setState","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"stateOf","outputs":[{"name":"","type":"uint8"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"type":"function"},{"anonymous":false,"inputs":[{"indexed":false,"name":"target","type":"address"},{"indexed":false,"name":"state","type":"uint8"}],"name":"stateChange","type":"event"}]);
+	
+	var csi_sko = cs_sko.at('0x4c62Fd28a0E3511bCaE4b6921645b67C60B63499');
+	csi_sko.stateOf(sko.account,function(err,o) {
+		var state = o.toString();
+		if(state==0) {
+					$('#connectState').removeClass('btn-default');
+					$('#connectState').addClass('btn-danger');
+					$('#connectState').html("Kein Anschlussvertrag");
+					if(sko.account!=web3.eth.coinbase) {
+						$('#connectState').attr('disabled','disabled');
+						$('#connectState').attr('title','Aktueller Account ist nicht unterschriftsberechtigt!');
+					}
+					
+		}
+		console.log(state);
+	});	
 }
 
 function checkWeb3Ready() {

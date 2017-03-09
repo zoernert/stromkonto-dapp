@@ -1,0 +1,8 @@
+{
+	"id": "stromkonto",
+	"name": "Stromkonto",
+	"description": "Stromkonto der StromDAO",
+	"version": "0.1",
+	"author": "StromDAO Ltd",
+	"iconUrl": "title.png"
+}

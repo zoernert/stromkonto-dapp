@@ -23,7 +23,57 @@ Number.prototype.format = function(n, x, s, c) {
 
     return (c ? num.replace('.', c) : num).replace(new RegExp(re, 'g'), '$&' + (s || ','));
 };
+fnctConnectState=function() {
+var html="";
+if(sko.state==0) {
+		html+='<div id="tablist" data-target="#connectStateTabs">';
+		html+="<h2>Bewirtschaftung</h2>";
+		html+='<ul class="nav nav-tabs" id="connectStateTabs" role="tablist">';
+		html+='<li role="presentation" class="active"><a href="#cStrom" role="tab" data-toggle="tab">Stromlieferung (Entnahme)</a></li>';
+		html+='<li role="presentation"><a href="#cEinspeisung" role="tab" data-toggle="tab">Einspeisung</a></li>';
+		html+='<li role="presentation"><a href="#cHybridstrom" role="tab" data-toggle="tab">Hybridstrom</a></li>';
+		html+='<li role="presentation"><a href="#cSonstiges" role="tab" data-toggle="tab">Sonstiges</a></li>';
+		html+="</ul>";		
+		html+="<div class='tab-content'>";
+		html+="<div class='col-md-4'>";
+		html+='<div class="tab-pane fade in active" role="tabpanel" id="cStrom" style="margin-top:10px;">';
+		html+="<div class='input-group'>";
+		html+="<span class='input-group-addon' id='desc-plz'>Postleitzahl</span> <input type='text' name='plz' id='plz' class='form-control'  aria-describedby='desc-plz'/><span class='input-group-btn'><button class='btn btn-primary' id='checkTarif' disabled='disabled'>abrufen</button></span>";
+		html+="</div>  <div id='tarifInfo'></div>";
+		html+="</div>";
+		html+="</div>";
+		html+='<div class="tab-pane fade" role="tabpanel" id="cEinspeisung">';
+		html+="<p>Einspeisung</p>";
+		html+="</div>";
+		html+="</div>";
+}
 
+setTimeout(function() {
+	$.getJSON("https://gist.githubusercontent.com/zoernert/a7f0169dd9fcd170b2b5a9ad6f113074/raw/cf8f557e931916d078910d46262f8a8cfcc07048/stromdao_tarif.json",function(o) {
+		sko.tarife=o;
+		$('#checkTarif').removeAttr('disabled');
+		$('#checkTarif').click(function(e) {
+		        var html="";
+				if(typeof sko.tarife["p"+$('#plz').val()] != "undefined") {
+						html+='<table class="table"><tr><th>Grundpreis:</th><td>'+sko.tarife["p"+$('#plz').val()].g+'€</td><td> pro Jahr</td></tr><tr><th>Arbeitspreis:</th><td>0,'+(sko.tarife["p"+$('#plz').val()].a*100)+'€</td><td>je KWh</td></tr></table>';
+				}
+				$('#tarifInfo').html(html);
+				e.preventDefault();
+		});
+		console.log("sko.tarife - Tarifinformationen geladen");
+	});
+},100);
+
+$('#connectStateTabs a').click(function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+})
+$('#app_connectState').html(html);
+if(sko.state==0) {
+	$('#cStrom').tab('show');
+}
+
+}
 function convertCentToEur(t) {
    v=t.toString();
       
@@ -64,13 +114,20 @@ function renderUI() {
 	var csi_sko = cs_sko.at('0x4c62Fd28a0E3511bCaE4b6921645b67C60B63499');
 	csi_sko.stateOf(sko.account,function(err,o) {
 		var state = o.toString();
+		sko.state=state;
 		if(state==0) {
 					$('#connectState').removeClass('btn-default');
 					$('#connectState').addClass('btn-danger');
 					$('#connectState').html("Kein Anschlussvertrag");
-					if(sko.account!=web3.eth.coinbase) {
+					disabled=true;
+					for(var i=0;i<web3.eth.accounts.length;i++) {
+						if(sko.account==web3.eth.accounts[i]) disabled=false;
+					}					
+					if(disabled) {
 						$('#connectState').attr('disabled','disabled');
 						$('#connectState').attr('title','Aktueller Account ist nicht unterschriftsberechtigt!');
+					} else {
+					$('#connectState').click(fnctConnectState);
 					}
 					
 		}

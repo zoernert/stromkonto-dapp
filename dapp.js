@@ -40,7 +40,7 @@ if(sko.state==0) {
 		html+="<div class='input-group'>";
 		html+="<span class='input-group-addon' id='desc-plz'>Postleitzahl</span> <input type='text' name='plz' id='plz' class='form-control'  aria-describedby='desc-plz'/><span class='input-group-btn'><button class='btn btn-primary' id='checkTarif' disabled='disabled'>abrufen</button></span>";
 		html+="</div>  <div id='tarifInfo'></div>";
-		html+="</div>";
+		//html+="</div>";
 		html+="</div>";
 		html+='<div class="tab-pane fade" role="tabpanel" id="cEinspeisung">';
 		html+="<p>Einspeisung</p>";

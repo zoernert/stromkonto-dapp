@@ -54,10 +54,21 @@ setTimeout(function() {
 		$('#checkTarif').removeAttr('disabled');
 		$('#checkTarif').click(function(e) {
 		        var html="";
+				var angebot={};
 				if(typeof sko.tarife["p"+$('#plz').val()] != "undefined") {
-						html+='<table class="table"><tr><th>Grundpreis:</th><td>'+sko.tarife["p"+$('#plz').val()].g+'€</td><td> pro Jahr</td></tr><tr><th>Arbeitspreis:</th><td>0,'+(sko.tarife["p"+$('#plz').val()].a*100)+'€</td><td>je KWh</td></tr></table>';
+						html+='<h4>Lieferant: <span style="color:#909090">StromDAO Ltd (Demo)</span></h4>';
+						html+='<table class="table"><tr><th>Grundpreis:</th><td>'+convertCentToEur(sko.tarife["p"+$('#plz').val()].g*100)+'€</td><td> pro Jahr</td></tr><tr><th>Arbeitspreis:</th><td>0,'+(sko.tarife["p"+$('#plz').val()].a*100)+'€</td><td>je KWh</td></tr></table>';
+						angebot.initLoad=Math.round(Math.round(((sko.tarife["p"+$('#plz').val()].g*100)/12)+(sko.tarife["p"+$('#plz').val()].a*10000))/100);
+						html+="<button class='btn btn-primary' id='angebotSign'>Angebot annehmen durch <strong>"+convertCentToEur(angebot.initLoad)+"€</strong> Aufladung</button>";
+						angebot.a=sko.tarife["p"+$('#plz').val()].a;
+						angebot.g=sko.tarife["p"+$('#plz').val()].g;
+						angebot.plz=$('#plz').val();
+						angebot.blk='0x9d9548d12FF9BaFE79cF3dD3191a9C8b42304347';						
 				}
 				$('#tarifInfo').html(html);
+				$('#angebotSign').click(function() {
+					console.log(angebot);
+				});
 				e.preventDefault();
 		});
 		console.log("sko.tarife - Tarifinformationen geladen");

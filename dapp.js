@@ -50,11 +50,11 @@ function requestBacking(centamount,cb) {
 					$('.eth_eur').html(convertCentToEur(eur));
 					var mis=Math.abs((sko.saldo-centamount)*(web3.fromWei(o, 'finney')/10));					
 					$('.eth_mis').html(convertCentToEur(mis));
-					var trans=mis;
+					var trans=eth_cent;
 					var trans_eur=(sko.saldo-centamount);
-					
-					if(trans<0)  { 
-						trans=eth_cent;
+					console.log(trans);
+					if(trans>mis)  { 
+						trans=mis;
 						trans_eur=eur;
 					}
 					
@@ -73,7 +73,7 @@ function requestBacking(centamount,cb) {
 							sko.sci_xch.buyEuro(wei,data,function(err,o) {
 									console.log(err,o);
 									// Do something cool... (Like User Feedback :) )
-									// User Feedback via "o" = Hash
+									// User Feedback via "o" = Has
 									cb();
 							});							
 					});
